@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Mvc;
 using OverviewAzureAiAgentService.Api.Services;
+using OverviewAzureAiAgentService.Api.Services.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<AgentService>();
+
+var env = builder.Environment;
 
 var app = builder.Build();
 
@@ -11,28 +15,20 @@ app.MapOpenApi();
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapPost("/agents", async ([FromServices] AgentService service, CreateAgentRequest request) => 
+    await service.CreateAgentAsync(request))
+    .WithName("CreateAgent");
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.MapPost("/threads", async ([FromServices] AgentService service) => 
+    await service.CreateThreadAsync())
+    .WithName("CreateThread");
 
+app.MapGet("/threads/{threadId}/messages", async ([FromServices] AgentService service, string threadId) =>
+    await service.ListMessagesAsync(threadId))
+    .WithName("ListThreadMessages");
+
+app.MapPost("/run", async ([FromServices] AgentService service, CreateRunRequest request) =>
+    await service.CreateRunAsync(request))
+    .WithName("CreateRun");
+    
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
