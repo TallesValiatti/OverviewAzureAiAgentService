@@ -1,6 +1,5 @@
 # Create resource group
-az group create --name rg-ai-project-prod-westus3 \
---location westus3
+az group create --name rg-ai-project-prod-westus3 --location westus3
 
 # Bicep what-if command
 

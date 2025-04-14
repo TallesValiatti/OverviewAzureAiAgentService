@@ -15,6 +15,7 @@ public class AgentService(IConfiguration configuration)
     var connectionString = configuration["AiServiceProjectConnectionString"]!;
     return new AgentsClient(connectionString, new DefaultAzureCredential());
   }
+  
   public async Task<Agent> CreateAgentAsync(CreateAgentRequest request)
   {
     var aiModel = configuration["AiModel"]!;
@@ -30,6 +31,7 @@ public class AgentService(IConfiguration configuration)
       agentResponse.Value.Name,
       agentResponse.Value.Instructions);
   }
+  
   public async Task<Thread> CreateThreadAsync()
   {
     var client = CreateAgentsClient();
@@ -37,7 +39,8 @@ public class AgentService(IConfiguration configuration)
     var threadResponse = await client.CreateThreadAsync();
 
     return new Thread(threadResponse.Value.Id);
-  } 
+  }
+  
   public async Task<Message> CreateRunAsync(CreateRunRequest request)
   { 
       var client = CreateAgentsClient();
