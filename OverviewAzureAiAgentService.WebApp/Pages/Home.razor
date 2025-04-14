@@ -5,20 +5,22 @@
 
 <PageTitle>Chat</PageTitle>
 
-<h3>Chat</h3>
+<div class="container mt-4">
+    <h3 class="text-center">Chat</h3>
 
-<div class="chat-container">
-    @foreach (var message in Messages)
-    {
-        <div class="message @(string.Compare(message.Role, "User", StringComparison.InvariantCultureIgnoreCase) == 0 ? "User" : "Assistant")">
-            @message.Content
-        </div>
-    }
-</div>
+    <div class="chat-container border rounded p-3 mb-3" style="height: 400px; overflow-y: auto;">
+        @foreach (var message in Messages)
+        {
+            <div class="message mb-2 p-2 rounded @(string.Compare(message.Role, "User", StringComparison.InvariantCultureIgnoreCase) == 0 ? "bg-primary text-white ms-auto" : "bg-light text-dark")" style="max-width: 75%;">
+                @message.Content
+            </div>
+        }
+    </div>
 
-<div class="input-container">
-    <input @bind="UserInput" @bind:event="oninput" placeholder="Type your message..." />
-    <button @onclick="SendMessage">Send</button>
+    <div class="input-container d-flex">
+        <input class="form-control me-2" @bind="UserInput" @bind:event="oninput" placeholder="Type your message..." />
+        <button class="btn btn-primary" @onclick="SendMessage">Send</button>
+    </div>
 </div>
 
 @code {
@@ -26,21 +28,20 @@
     private Thread _thread = null!;
     private string UserInput { get; set; } = string.Empty;
     private List<Message> Messages { get; set; } = [];
+
     
     protected override async Task OnInitializedAsync()
     {
-        // Create the assistant
         var createAgentRequest = new CreateAgentRequest
         {
             Name = "Assistant",
-            Instructions = "Provide helpful responses to user queries."
+            Instructions = Constants.Instructions
         };
-        
+
         _agent = await AppService.CreateAgentAsync(createAgentRequest);
-        
+
         _thread = await AppService.CreateThreadAsync();
-        
-        // Optionally, initialize the Messages list with a welcome message
+
         Messages.Add(new Message
         {
             Content = "Hello! How can I assist you today?",
@@ -53,22 +54,19 @@
         if (string.IsNullOrWhiteSpace(UserInput))
             return;
 
-        // Add user message
         var userMessage = new Message { Content = UserInput, Role = "User" };
         Messages.Add(userMessage);
 
-        // Clear input
         var input = UserInput;
         UserInput = string.Empty;
 
-        // Call API and add response
         var response = await AppService.CreateRunAsync(new CreateRunRequest()
         {
             ThreadId = _thread.Id,
             AgentId = _agent.Id,
             Message = input
         });
-        
+
         Messages.Add(response);
     }
 }
