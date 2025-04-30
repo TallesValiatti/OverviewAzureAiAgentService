@@ -1,18 +1,28 @@
 ﻿@page "/"
 @using OverviewAzureAiAgentService.WebApp.Models
 @using OverviewAzureAiAgentService.WebApp.Services
+@using Markdig;
 @inject AppService AppService
 
 <PageTitle>Chat</PageTitle>
 
 <div class="container mt-4">
-    <h3 class="text-center">Chat</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Chat</h3>
+        <div>
+            <label for="agentSelector" class="form-label me-2">Select Agent:</label>
+            <select id="agentSelector" class="form-select d-inline-block w-auto" @onchange="OnAgentTypeChanged">
+                <option value="Sarcastic">Sarcastic Agent</option>
+                <option value="Doc">Doc Agent</option>
+            </select>
+        </div>
+    </div>
 
     <div class="chat-container border rounded p-3 mb-3" style="height: 400px; overflow-y: auto;">
         @foreach (var message in Messages)
         {
             <div class="message mb-2 p-2 rounded @(string.Compare(message.Role, "User", StringComparison.InvariantCultureIgnoreCase) == 0 ? "bg-primary text-white ms-auto" : "bg-light text-dark")" style="max-width: 75%;">
-                @message.Content
+                @((MarkupString)Markdown.ToHtml(message.Content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build()))
             </div>
         }
     </div>
@@ -28,23 +38,39 @@
     private Thread _thread = null!;
     private string UserInput { get; set; } = string.Empty;
     private List<Message> Messages { get; set; } = [];
+    private string SelectedAgentType { get; set; } = "Sarcastic";
+    private static string WelcomeMessage => "Hi! How can I assist you today?";
 
-    
     protected override async Task OnInitializedAsync()
     {
+        await CreateNewAgent();
+    }
+
+    private async Task OnAgentTypeChanged(ChangeEventArgs e)
+    {
+        SelectedAgentType = e.Value?.ToString() ?? "Sarcastic";
+        await CreateNewAgent();
+    }
+
+    private async Task CreateNewAgent()
+    {
+        Messages.Clear();
+
         var createAgentRequest = new CreateAgentRequest
         {
-            Name = "Assistant",
-            Instructions = Constants.Instructions
+            Name = SelectedAgentType == "Doc" ? "Doc Agent" : "Sarcastic Agent",
+            Instructions = SelectedAgentType == "Doc" 
+                ? Constants.DocInstructions 
+                : Constants.Instructions,
+            IsDocAgent = SelectedAgentType == "Doc"
         };
 
         _agent = await AppService.CreateAgentAsync(createAgentRequest);
-
         _thread = await AppService.CreateThreadAsync();
-
+        
         Messages.Add(new Message
         {
-            Content = "Hello! How can I assist you today?",
+            Content = WelcomeMessage,
             Role = "Assistant"
         });
     }

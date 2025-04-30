@@ -63,7 +63,6 @@ public static class Constants
 
                                        1. Deploy the model in the **Azure AI Foundry portal**.  
                                        2. Use the **deployment name** (e.g., `"llama-3"`) in your agent code.
-                                       ;
                                        """;
 
     public const string FileSearchDoc = """

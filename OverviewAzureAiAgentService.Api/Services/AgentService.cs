@@ -39,8 +39,8 @@ public class AgentService(IConfiguration configuration)
         
         var fileIds = new List<string>();
 
-        fileIds.Add(await UploadFileAsync(Constants.FileSearchDoc, nameof(Constants.FileSearchDoc)));
-        fileIds.Add(await UploadFileAsync(Constants.ModelSupportDoc, nameof(Constants.ModelSupportDoc)));
+        fileIds.Add(await UploadFileAsync(Constants.FileSearchDoc, $"{nameof(Constants.FileSearchDoc)}.txt"));
+        fileIds.Add(await UploadFileAsync(Constants.ModelSupportDoc, $"{nameof(Constants.ModelSupportDoc)}.txt"));
         
         var vectorStoreId = await CreateDocVectorStoreAsync(files: fileIds); 
         

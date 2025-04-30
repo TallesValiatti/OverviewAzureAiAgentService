@@ -25,9 +25,13 @@ app.MapOpenApi();
 
 app.UseHttpsRedirection();
 
-app.MapPost("/agents", async ([FromServices] AgentService service, CreateAgentRequest request) => 
-    await service.CreateAgentAsync(request))
-    .WithName("CreateAgent");
+app.MapPost("/agents", async ([FromServices] AgentService service, CreateAgentRequest request) =>
+{
+    var agent = request.IsDocAgent
+        ? await service.CreateDocAgentAsync(request)
+        : await service.CreateAgentAsync(request);
+    return Results.Ok(agent);
+}).WithName("CreateAgent");
 
 app.MapPost("/threads", async ([FromServices] AgentService service) => 
     await service.CreateThreadAsync())
