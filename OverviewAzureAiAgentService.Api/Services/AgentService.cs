@@ -91,6 +91,14 @@ public class AgentService(IConfiguration configuration)
             runResponse = await client.GetRunAsync(request.ThreadId, runResponse.Value.Id);
         } while (runResponse.Value.Status == RunStatus.Queued || runResponse.Value.Status == RunStatus.InProgress);
 
+        if (runResponse.Value.Status == RunStatus.Failed)
+        {
+            return new Message(
+                Guid.NewGuid().ToString(), 
+                MessageRole.User.ToString(),
+                $"Error: {runResponse.Value.LastError.Message}");
+        }
+        
         Response<PageableList<ThreadMessage>> afterRunMessagesResponse =
             await client.GetMessagesAsync(request.ThreadId, order: ListSortOrder.Descending, limit: 1);
 
