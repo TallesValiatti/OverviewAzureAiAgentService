@@ -10,6 +10,8 @@ namespace OverviewAzureAiAgentService.Api.Services;
 
 public class AgentService(IConfiguration configuration)
 {
+    private string _annotationMark = "📖";
+    
     private AgentsClient CreateAgentsClient()
     {
         var connectionString = configuration["AiServiceProjectConnectionString"]!;
@@ -105,7 +107,25 @@ public class AgentService(IConfiguration configuration)
         {
             if (contentItem is MessageTextContent textItem)
             {
-                text.AppendLine(textItem.Text);
+                var annotations = textItem.Annotations;
+
+                if (annotations.Any())
+                {
+                    var formattedText = textItem.Text;
+                    
+                    foreach (var annotation in annotations)
+                    {
+                        if (annotation is MessageTextFileCitationAnnotation messageTextFileCitationAnnotation)
+                        {
+                            formattedText = formattedText.Replace(messageTextFileCitationAnnotation.Text, $" ({_annotationMark} {messageTextFileCitationAnnotation.FileId})");
+                        }
+                    }
+                    text.AppendLine(formattedText);
+                }
+                else
+                {
+                    text.AppendLine(textItem.Text);
+                }
             }
         }
 
