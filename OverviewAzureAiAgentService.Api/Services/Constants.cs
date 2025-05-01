@@ -47,7 +47,7 @@ public static class Constants
 
                                        | Model | Family |
                                        |-------|--------|
-                                       | **Meta-Llama-3-🚀-Instruct (405B)** | Meta |
+                                       | **Meta-Llama-405B-Instruct** | Meta |
                                        | **Cohere-command-r-plus** | Cohere |
                                        | **Cohere-command-r** | Cohere |
 

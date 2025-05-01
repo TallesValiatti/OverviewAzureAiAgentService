@@ -3,6 +3,6 @@
 What is the capital of Brazil?
 
 - Doc
- What are the Non-Microsoft Models supported?
+ What are the Non-Microsoft Models supported? Show me only names.
  Which Azure regions currently support both the latest gpt-4o (2024-11-20) model and any version of gpt-35-turbo?
 
