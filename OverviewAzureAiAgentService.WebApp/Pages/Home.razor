@@ -14,6 +14,7 @@
             <select id="agentSelector" class="form-select d-inline-block w-auto" @onchange="OnAgentTypeChanged" disabled="@IsLoading">
                 <option value="Sarcastic">Sarcastic Agent</option>
                 <option value="Doc">Doc Agent</option>
+                <option value="Sales">Sales Agent</option>
             </select>
         </div>
     </div>
@@ -105,13 +106,22 @@
 
         var createAgentRequest = new CreateAgentRequest
         {
-            Name = SelectedAgentType == "Doc" ? "Doc Agent" : "Sarcastic Agent",
-            Instructions = SelectedAgentType == "Doc"
-                ? Constants.DocInstructions
-                : Constants.Instructions,
-            IsDocAgent = SelectedAgentType == "Doc"
+            Name = SelectedAgentType switch
+            {
+                "Doc" => "Doc Agent",
+                "Sales" => "Sales Agent",
+                _ => "Sarcastic Agent"
+            },
+            Instructions = SelectedAgentType switch
+            {
+                "Doc" => Constants.DocInstructions,
+                "Sales" => Constants.SalesInstructions,
+                _ => Constants.Instructions
+            },
+            IsDocAgent = SelectedAgentType == "Doc",
+            IsSalesAgent = SelectedAgentType == "Sales"
         };
-
+        
         _agent = await AppService.CreateAgentAsync(createAgentRequest);
         _thread = await AppService.CreateThreadAsync();
 

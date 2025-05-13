@@ -61,6 +61,33 @@ public class AgentService(IConfiguration configuration)
             agentResponse.Value.Name,
             agentResponse.Value.Instructions);
     }
+    
+    public async Task<Agent> CreateSalesAgentAsync(CreateAgentRequest request)
+    {
+        var aiModel = configuration["AiModel"]!;
+        var salesApiUrl = configuration["SalesApiUrl"]!;
+        var openApiSchema = Constants.SalesOpenApiSchema.Replace("<URL>", salesApiUrl);
+        
+        var client = CreateAgentsClient();
+        
+        var oaiAuth = new OpenApiAnonymousAuthDetails();
+        var openapiTool = new OpenApiToolDefinition(
+            name: "GetSales",
+            description: "Get sales data",
+            spec: BinaryData.FromString(openApiSchema),
+            auth: oaiAuth);
+        
+        var agentResponse = await client.CreateAgentAsync(
+            model: aiModel,
+            name: request.Name,
+            instructions: request.Instructions,
+            tools: new List<ToolDefinition> { openapiTool });
+        
+        return new Agent(
+            agentResponse.Value.Id,
+            agentResponse.Value.Name,
+            agentResponse.Value.Instructions);
+    }
 
     public async Task<Thread> CreateThreadAsync()
     {
@@ -89,7 +116,9 @@ public class AgentService(IConfiguration configuration)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(500));
             runResponse = await client.GetRunAsync(request.ThreadId, runResponse.Value.Id);
-        } while (runResponse.Value.Status == RunStatus.Queued || runResponse.Value.Status == RunStatus.InProgress);
+        } while (runResponse.Value.Status == RunStatus.Queued || 
+                 runResponse.Value.Status == RunStatus.InProgress ||
+                 runResponse.Value.Status == RunStatus.RequiresAction);
 
         if (runResponse.Value.Status == RunStatus.Failed)
         {

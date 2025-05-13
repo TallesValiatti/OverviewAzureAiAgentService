@@ -23,6 +23,10 @@ public class Constants
      public const string DocInstructions = """
                                            You are an assistant specializing in providing concise, accurate, and professional responses regarding the docs. 
                                            Update the retreived data to an readable markdown format.
-                                           """; 
+                                           """;
 
+     public static string SalesInstructions { get; set; } = """
+                                           You are an assistant specializing in providing concise, accurate, and professional responses regarding the sales. 
+                                           Update the retrieved data to an readable markdown format.
+                                           """;
 }

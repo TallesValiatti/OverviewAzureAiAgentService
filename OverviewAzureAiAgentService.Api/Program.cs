@@ -27,9 +27,21 @@ app.UseHttpsRedirection();
 
 app.MapPost("/agents", async ([FromServices] AgentService service, CreateAgentRequest request) =>
 {
-    var agent = request.IsDocAgent
-        ? await service.CreateDocAgentAsync(request)
-        : await service.CreateAgentAsync(request);
+    Agent agent;
+    
+    if (request.IsSalesAgent)
+    {
+        agent = await service.CreateSalesAgentAsync(request);    
+    }
+    else if(request.IsDocAgent)
+    {
+        agent = await service.CreateDocAgentAsync(request);
+    }
+    else
+    {
+        agent = await service.CreateAgentAsync(request);
+    }
+    
     return Results.Ok(agent);
 }).WithName("CreateAgent");
 

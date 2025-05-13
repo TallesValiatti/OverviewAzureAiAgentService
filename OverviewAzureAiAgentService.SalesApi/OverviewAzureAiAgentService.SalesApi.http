@@ -1,4 +1,4 @@
-@host =  http://localhost:5172
+@host = https://app-sales-eastus2-a9a4ggbxd4gucze8.eastus2-01.azurewebsites.net/
 
 ### Get all sales
 GET {{host}}/sales

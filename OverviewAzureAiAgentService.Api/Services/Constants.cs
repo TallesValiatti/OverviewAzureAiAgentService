@@ -167,4 +167,90 @@ public static class Constants
                                          * The fallback wait **does not apply** to the agent’s vector store.
                                        """;
 
+    public const string SalesOpenApiSchema = """
+                                             {
+                                               "openapi": "3.0.1",
+                                               "info": {
+                                                 "title": "OverviewAzureAiAgentService.SalesApi | v1",
+                                                 "version": "1.0.0"
+                                               },
+                                               "servers": [
+                                                 {
+                                                   "url": "<URL>"
+                                                 }
+                                               ],
+                                               "paths": {
+                                                 "/sales": {
+                                                   "get": {
+                                                     "tags": [
+                                                       "OverviewAzureAiAgentService.SalesApi"
+                                                     ],
+                                                     "operationId": "GetSales",
+                                                     "parameters": [
+                                                       {
+                                                         "name": "startDate",
+                                                         "in": "query",
+                                                         "schema": {
+                                                           "type": "string",
+                                                           "format": "date-time"
+                                                         }
+                                                       },
+                                                       {
+                                                         "name": "endDate",
+                                                         "in": "query",
+                                                         "schema": {
+                                                           "type": "string",
+                                                           "format": "date-time"
+                                                         }
+                                                       }
+                                                     ],
+                                                     "responses": {
+                                                       "200": {
+                                                         "description": "OK",
+                                                         "content": {
+                                                           "application/json": {
+                                                             "schema": {
+                                                               "type": "array",
+                                                               "items": {
+                                                                 "$ref": "#/components/schemas/Sale"
+                                                               }
+                                                             }
+                                                           }
+                                                         }
+                                                       }
+                                                     }
+                                                   }
+                                                 }
+                                               },
+                                               "components": {
+                                                 "schemas": {
+                                                   "Sale": {
+                                                     "type": "object",
+                                                     "properties": {
+                                                       "id": {
+                                                         "type": "string",
+                                                         "format": "uuid"
+                                                       },
+                                                       "customerEmail": {
+                                                         "type": "string"
+                                                       },
+                                                       "createdAt": {
+                                                         "type": "string",
+                                                         "format": "date-time"
+                                                       },
+                                                       "totalValue": {
+                                                         "type": "number",
+                                                         "format": "double"
+                                                       }
+                                                     }
+                                                   }
+                                                 }
+                                               },
+                                               "tags": [
+                                                 {
+                                                   "name": "OverviewAzureAiAgentService.SalesApi"
+                                                 }
+                                               ]
+                                             }
+                                             """;
 }
