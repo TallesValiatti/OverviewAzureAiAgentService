@@ -1,0 +1,13 @@
+@host =  http://localhost:5172
+
+### Get all sales
+GET {{host}}/sales
+Accept: application/json
+
+### Get sales within a specific date range
+GET {{host}}/sales?startDate=2025-03-12&endDate=2025-03-12
+Accept: application/json
+
+### Get OPENAPI schema
+GET {{host}}/openapi/v1.json
+Accept: application/json
