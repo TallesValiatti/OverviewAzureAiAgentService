@@ -96,7 +96,7 @@ public class AgentService(IConfiguration configuration, EmailService emailServic
         var client = CreateAgentsClient();
         
         FunctionToolDefinition emailToolDefinition = new(
-            name: nameof(EmailTool),
+            name: "EmailTool",
             description: "Send email to a user",
             parameters: BinaryData.FromObjectAsJson(
                 new
@@ -300,7 +300,7 @@ public class AgentService(IConfiguration configuration, EmailService emailServic
         
         using var argumentsJson = JsonDocument.Parse(functionToolCall.Arguments);
             
-        if (functionToolCall.Name == nameof(EmailTool))
+        if (functionToolCall.Name == "EmailTool")
         {
             string receiver = argumentsJson.RootElement.GetProperty("receiver").GetString()!;
             string subject = argumentsJson.RootElement.GetProperty("subject").GetString()!;
