@@ -1,8 +1,8 @@
 namespace OverviewAzureAiAgentService.Api.Services.Models;
 
-public static class Constants
+public static class Emailbody
 {
-    public static string EmailBody => """
+    public static string Body => """
                                     <!DOCTYPE html>
                                     <html>
                                     <head>
