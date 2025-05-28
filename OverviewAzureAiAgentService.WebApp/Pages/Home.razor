@@ -15,6 +15,7 @@
                 <option value="Sarcastic">Sarcastic Agent</option>
                 <option value="Doc">Doc Agent</option>
                 <option value="Sales">Sales Agent</option>
+                <option value="Email">Email Sender Agent</option>
             </select>
         </div>
     </div>
@@ -100,7 +101,7 @@
     {
         IsLoading = true;
         UserInput = string.Empty;
-        StateHasChanged(); // update UI immediately
+        StateHasChanged();
 
         Messages.Clear();
 
@@ -110,16 +111,21 @@
             {
                 "Doc" => "Doc Agent",
                 "Sales" => "Sales Agent",
+                "Email" => "Email Sender Agent",
                 _ => "Sarcastic Agent"
             },
             Instructions = SelectedAgentType switch
             {
                 "Doc" => Constants.DocInstructions,
                 "Sales" => Constants.SalesInstructions,
+                "Email" => Constants.EmailInstructions, 
                 _ => Constants.Instructions
             },
+            
             IsDocAgent = SelectedAgentType == "Doc",
-            IsSalesAgent = SelectedAgentType == "Sales"
+            IsSalesAgent = SelectedAgentType == "Sales",
+            IsEmailSenderAgent = SelectedAgentType == "Email" 
+
         };
         
         _agent = await AppService.CreateAgentAsync(createAgentRequest);
@@ -132,7 +138,7 @@
         });
 
         IsLoading = false;
-        await InvokeAsync(StateHasChanged); // ensure UI is refreshed
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task SendMessage()

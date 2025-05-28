@@ -29,4 +29,6 @@ public class Constants
                                            You are an assistant specializing in providing concise, accurate, and professional responses regarding the sales. 
                                            Update the retrieved data to an readable markdown format.
                                            """;
+
+     public static string EmailInstructions { get; set; } = "You are an assistant specializing in creating professional and concise email content";
 }
