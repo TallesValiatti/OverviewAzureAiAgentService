@@ -31,4 +31,7 @@ public class Constants
                                            """;
 
      public static string EmailInstructions { get; set; } = "You are an assistant specializing in creating professional and concise email content";
+
+
+     public static string HistoryInstructions { get; set; } = "You are an assistant specializing in providing concise responses regarding the history about Maria and José. Update the retrieved data to an readable markdown format.";
 }

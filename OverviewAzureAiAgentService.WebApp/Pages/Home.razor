@@ -16,6 +16,7 @@
                 <option value="Doc">Doc Agent</option>
                 <option value="Sales">Sales Agent</option>
                 <option value="Email">Email Sender Agent</option>
+                <option value="History">Maria and José history Agent</option>
             </select>
         </div>
     </div>
@@ -112,6 +113,7 @@
                 "Doc" => "Doc Agent",
                 "Sales" => "Sales Agent",
                 "Email" => "Email Sender Agent",
+                "History" => "Maria and José history Agent",
                 _ => "Sarcastic Agent"
             },
             Instructions = SelectedAgentType switch
@@ -119,13 +121,14 @@
                 "Doc" => Constants.DocInstructions,
                 "Sales" => Constants.SalesInstructions,
                 "Email" => Constants.EmailInstructions, 
+                "History" => Constants.HistoryInstructions,             
                 _ => Constants.Instructions
             },
             
             IsDocAgent = SelectedAgentType == "Doc",
             IsSalesAgent = SelectedAgentType == "Sales",
-            IsEmailSenderAgent = SelectedAgentType == "Email" 
-
+            IsEmailSenderAgent = SelectedAgentType == "Email", 
+            IsHistoryAgent = SelectedAgentType == "History"
         };
         
         _agent = await AppService.CreateAgentAsync(createAgentRequest);

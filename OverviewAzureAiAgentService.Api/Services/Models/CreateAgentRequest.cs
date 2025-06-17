@@ -5,4 +5,5 @@ public record CreateAgentRequest(
     string Instructions,
     bool IsDocAgent = false,
     bool IsSalesAgent = false,
-    bool IsEmailSenderAgent = false);
+    bool IsEmailSenderAgent = false,
+    bool IsHistoryAgent = false);

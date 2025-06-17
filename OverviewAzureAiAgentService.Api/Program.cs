@@ -44,6 +44,10 @@ app.MapPost("/agents", async ([FromServices] AgentService service, CreateAgentRe
     {
         agent = await service.CreateEmailSenderAgentAsync(request);
     }
+    else if (request.IsHistoryAgent)
+    {
+        agent = await service.CreateHistoryAgentAsync(request);
+    }
     else
     {
         agent = await service.CreateAgentAsync(request);

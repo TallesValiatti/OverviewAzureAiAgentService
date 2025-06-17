@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Azure;
 using Azure.AI.Agents.Persistent;
+using Azure.AI.Projects;
 using Azure.Identity;
 using OverviewAzureAiAgentService.Api.Services.Models;
 using Thread = OverviewAzureAiAgentService.Api.Services.Models.Thread;
@@ -16,6 +17,12 @@ public class AgentService(IConfiguration configuration, EmailService emailServic
     {
         var connectionString = configuration["AiServiceProjectConnectionString"]!;
         return new PersistentAgentsClient(connectionString, new DefaultAzureCredential());
+    }
+    
+    private AIProjectClient CreateProjectClient()
+    {
+        var connectionString = configuration["AiServiceProjectConnectionString"]!;
+        return new AIProjectClient(new Uri(connectionString), new DefaultAzureCredential());
     }
 
     public async Task<Agent> CreateAgentAsync(CreateAgentRequest request)
@@ -135,6 +142,47 @@ public class AgentService(IConfiguration configuration, EmailService emailServic
             agentResponse.Value.Name,
             agentResponse.Value.Instructions);
     }
+    
+    public async Task<Agent> CreateHistoryAgentAsync(CreateAgentRequest request)
+    {
+        var aiModel = configuration["AiModel"]!;
+        
+        var agentClient = CreateAgentsClient();
+        var projectClient = CreateProjectClient();
+
+        var connectionsClient = projectClient.GetConnectionsClient();
+        var connections = connectionsClient.GetConnectionsAsync();
+
+        var azureAiSearchConnectionId = "";
+        await foreach (var connection in connections)
+        {
+            if (connection.Type != ConnectionType.AzureAISearch) continue;
+            azureAiSearchConnectionId = connection.Id;
+            break;
+        }
+        
+        AzureAISearchToolResource searchResource = new(
+            indexConnectionId: azureAiSearchConnectionId,
+            indexName: "history-maria-jose",
+            topK: 5,
+            filter: string.Empty,
+            queryType: AzureAISearchQueryType.VectorSimpleHybrid
+        );
+        
+        ToolResources toolResource = new() { AzureAISearch = searchResource };
+
+        var agentResponse = await agentClient.Administration.CreateAgentAsync(
+            model: aiModel,
+            name: request.Name,
+            instructions: request.Instructions,
+            tools: [new AzureAISearchToolDefinition()],
+            toolResources: toolResource);
+        
+        return new Agent(
+            agentResponse.Value.Id,
+            agentResponse.Value.Name,
+            agentResponse.Value.Instructions);
+    }
 
     public async Task<Thread> CreateThreadAsync()
     {
@@ -216,6 +264,10 @@ public class AgentService(IConfiguration configuration, EmailService emailServic
                         if (annotation is MessageTextFileCitationAnnotation messageTextFileCitationAnnotation)
                         {
                             formattedText = formattedText.Replace(messageTextFileCitationAnnotation.Text, $" ({_annotationMark} {messageTextFileCitationAnnotation.FileId})");
+                        }
+                        else if (annotation is MessageTextUriCitationAnnotation messageTextUriCitationAnnotation)
+                        {
+                            formattedText = formattedText.Replace(messageTextUriCitationAnnotation.Text, $" ({_annotationMark} {messageTextUriCitationAnnotation.UriCitation.Title})");
                         }
                     }
                     text.AppendLine(formattedText);
